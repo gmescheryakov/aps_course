@@ -3,6 +3,7 @@ package bufferAndManagers;
 import source.Request;
 import tools.Report;
 
+import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import java.util.Queue;
 
@@ -11,10 +12,12 @@ import static tools.ConstantsAndParameters.PACKAGE_SIZE;
 public class BufferManager {
   private final Buffer buffer;
   private final Report report;
+  private DefaultTableModel modelStepBuf1;
 
-  public BufferManager(Buffer buffer, Report report) {
+  public BufferManager(Buffer buffer, Report report, DefaultTableModel modelStepBuf1) {
     this.buffer = buffer;
     this.report = report;
+    this.modelStepBuf1 = modelStepBuf1;
   }
 
   public void emplace(Request request) {
@@ -33,7 +36,10 @@ public class BufferManager {
         }
       }
       report.incrementRejectedRequestCount(request.getSourceNumber());
-      System.out.println("Request " + request.getNumber() + " refused");
+      Object[] object = new Object[1];
+      object[0] = "Request " + request.getNumber() + " refused";
+      modelStepBuf1.addRow(object);
+//      System.out.println("Request " + request.getNumber() + " refused");
     }
   }
 
@@ -42,7 +48,10 @@ public class BufferManager {
     if (oldRequest != null) {
       report.incrementRejectedRequestCount(oldRequest.getSourceNumber());
       report.addRequestTimeInBuffer(oldRequest.getSourceNumber(),System.currentTimeMillis() - oldRequest.getArrivalTime());
-      System.out.println("Request " + oldRequest.getNumber() + " refused");
+      Object[] object = new Object[1];
+      object[0] = "Request " + oldRequest.getNumber() + " refused";
+      modelStepBuf1.addRow(object);
+//      System.out.println("Request " + oldRequest.getNumber() + " refused");
     }
   }
 }

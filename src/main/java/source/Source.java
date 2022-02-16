@@ -3,6 +3,8 @@ package source;
 import bufferAndManagers.BufferManager;
 import tools.Report;
 
+import javax.swing.table.DefaultTableModel;
+
 import static tools.ConstantsAndParameters.*;
 
 public class Source implements Runnable {
@@ -11,14 +13,17 @@ public class Source implements Runnable {
   private final int number;
   private final BufferManager bufferManager;
   private final Report report;
+  public static boolean isTrue = true;
+  private DefaultTableModel modelStepSource;
 
   private final Object stepReportSynchronizer;
 
-  public Source(BufferManager bufferManager, Report report, Object stepReportSynchronizer) {
+  public Source(BufferManager bufferManager, Report report, Object stepReportSynchronizer, DefaultTableModel modelStepSource) {
     this.number = count++;
     this.bufferManager = bufferManager;
     this.report = report;
     this.stepReportSynchronizer = stepReportSynchronizer;
+    this.modelStepSource = modelStepSource;
   }
 
   public int getNumber() {
@@ -36,7 +41,16 @@ public class Source implements Runnable {
         }
       }
       Request request = new Request(number);
-      System.out.println("Source " + number + ": generate request " + request.getNumber());
+
+      if (isTrue) {
+        modelStepSource.addColumn("generation");
+        isTrue = false;
+      }
+//      modelStepBuf.addRow(number);
+      Object[] object = new Object[1];
+      object[0] = "Source " + number + ": generate request " + request.getNumber();
+      modelStepSource.addRow(object);
+//      System.out.println("Source " + number + ": generate request " + request.getNumber());
       bufferManager.emplace(request);
 
       report.incrementGeneratedRequestCount(number);
@@ -48,5 +62,9 @@ public class Source implements Runnable {
         break;
       }
     }
+  }
+
+  public static void resetCounter(){
+    count = 0;
   }
 }

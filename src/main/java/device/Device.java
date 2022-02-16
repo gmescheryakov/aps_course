@@ -4,6 +4,7 @@ import bufferAndManagers.Buffer;
 import source.Request;
 import tools.Report;
 
+import javax.swing.table.DefaultTableModel;
 import java.util.Queue;
 
 import static tools.ConstantsAndParameters.*;
@@ -18,16 +19,19 @@ public class Device implements Runnable {
   private final Object newPackageNotifier;
   private final Report report;
   private final Object stepReportSynchronizer;
+  private DefaultTableModel modelStepDevice;
+  public static boolean isTrue = true;
 
   private final Buffer buffer;
 
-  public Device(Report report, Object stepReportSynchronizer, Buffer buffer) {
+  public Device(Report report, Object stepReportSynchronizer, Buffer buffer, DefaultTableModel modelStepDevice) {
     this.number = count++;
     this.report = report;
     this.isFree = true;
     this.newPackageNotifier = new Object();
     this.stepReportSynchronizer = stepReportSynchronizer;
     this.buffer = buffer;
+    this.modelStepDevice = modelStepDevice;
   }
 
   public int getNumber() {
@@ -48,7 +52,14 @@ public class Device implements Runnable {
     this.requestsPackage = requests;
     this.packageNumber = packageNumber;
     synchronized (newPackageNotifier) {
-      System.out.println("Device " + number + ": start process package " + packageNumber);
+      if (isTrue) {
+        modelStepDevice.addColumn("Device info");
+        isTrue = false;
+      }
+      Object[] objects = new Object[1];
+      objects[0] = "Device " + number + ": start process package " + packageNumber;
+      modelStepDevice.addRow(objects);
+//      System.out.println("Device " + number + ": start process package " + packageNumber);
       isFree = false;
       newPackageNotifier.notify();
     }
@@ -84,15 +95,25 @@ public class Device implements Runnable {
         }
 
         report.incrementProcessedRequestCount(request.getSourceNumber());
-        System.out.println("    Request " + request.getNumber() + ", package " + packageNumber + ", done");
+        Object[] objects = new Object[1];
+        objects[0] = "Request " + request.getNumber() + ", package " + packageNumber + ", done";
+        modelStepDevice.addRow(objects);
+//        System.out.println("    Request " + request.getNumber() + ", package " + packageNumber + ", done");
       }
 
       report.addRequestServiceTime(request.getSourceNumber(), System.currentTimeMillis() - request.getArrivalTime());
 
       report.addDeviceBusyTime(number, System.currentTimeMillis() - startBusyTime);
-      System.out.println("Device " + number + ": finish process package " + packageNumber);
+      Object[] objects1 = new Object[1];
+      objects1[0] = "Device " + number + ": finish process package " + packageNumber;
+      modelStepDevice.addRow(objects1);
+//      System.out.println("Device " + number + ": finish process package " + packageNumber);
       buffer.packageIsAvailable(packageNumber);
       isFree = true;
     }
+  }
+
+  public static void resetCounter(){
+    count = 0;
   }
 }

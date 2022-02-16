@@ -5,10 +5,13 @@ import org.apache.commons.math3.util.Pair;
 import source.Request;
 import tools.Report;
 
+import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Vector;
+
+import static tools.ConstantsAndParameters.PACKAGE_SIZE;
 
 public class DeviceManager implements Runnable {
   private final Vector<Device> devices;
@@ -39,26 +42,23 @@ public class DeviceManager implements Runnable {
     return devicePointer;
   }
 
-  public String bufferOutput() {
-    StringBuilder stringBuilder = new StringBuilder();
+  public void bufferOutput(DefaultTableModel modelBuffer) {
     synchronized (buffer.getRequestsList()) {
+      Object[] bufferCells = new Object[buffer.getRequestsList().size()];
       int i = 0;
+      for (int j = 0; j < buffer.getRequestsList().size(); j++){
+        bufferCells[j] = "";
+      }
       for (Queue<Request> requests : buffer.getRequestsList()) {
-        stringBuilder
-            .append("Package ")
-            .append(i)
-            .append(": ");
-        ++i;
         if (requests != null) {
           for (Request request : requests) {
-            stringBuilder
-                .append(request == null ? null : request.getNumber())
-                .append(" | ");
+            bufferCells[i] += (request == null ? "" : (request.getNumber()) + " ");
           }
         }
-        stringBuilder.append("\n");
+        ++i;
       }
-      return stringBuilder.toString();
+      modelBuffer.addRow(bufferCells);
+
     }
   }
 
