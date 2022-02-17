@@ -84,7 +84,8 @@ public class Device implements Runnable {
       }
 
       Request request = null;
-      for (int i = 0; i < requestsPackage.size() && !Thread.currentThread().isInterrupted(); i++) {
+      int packgeSize = requestsPackage.size();
+      for (int i = 0; i < packgeSize && !Thread.currentThread().isInterrupted(); i++) {
         request = requestsPackage.poll();
 
         try {
