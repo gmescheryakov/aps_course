@@ -1,9 +1,11 @@
 package bufferAndManagers;
 
+import com.microsoft.schemas.compatibility.AlternateContentDocument;
 import device.Device;
 import org.apache.commons.math3.util.Pair;
 import source.Request;
 import tools.Report;
+import bufferAndManagers.Buffer;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public class DeviceManager implements Runnable {
   private final Vector<Device> devices;
   private final Buffer buffer;
   private volatile int devicePointer;
+  private static int sourcePointer = 0;
 
   private final Object bufferNotEmptyNotifier;
   private final Object stepReportSynchronizer;
@@ -128,13 +131,30 @@ public class DeviceManager implements Runnable {
     Queue<Request> requests = null;
     synchronized (buffer.getRequestsList()) {
       List<Queue<Request>> requestsPackages = buffer.getRequestsList();
-      for (int i = 0; i < requestsPackages.size(); i++) {
-        if (requestsPackages.get(i) != null && !requestsPackages.get(i).isEmpty()) {
-          requests = buffer.getPackage(i);
-          return new Pair<>(i, requests);
+      boolean isEnd = false;
+      for(int j = 0; j < requestsPackages.size(); j++) {
+        for (int i = 0; i < requestsPackages.size(); i++) {
+          if (requestsPackages.get(i) != null && !requestsPackages.get(i).isEmpty() && sourcePointer == buffer.getRequestFromBuffer(i)) {
+            requests = buffer.getPackage(i);
+            return new Pair<>(i, requests);
+          }
+        }
+        sourcePointer++;
+        if (isEnd == false){
+          isEnd = true;
+          sourcePointer = 0;
+          j = 0;
         }
       }
+
     }
     throw new Exception("No requests in buffer");
   }
+
+//  private int getRequestFromBuffer(int index){
+//    for (Request requests: buffer.get(index)){
+//      return requests.getSourceNumber();
+//    }
+//    return index;
+//  }
 }

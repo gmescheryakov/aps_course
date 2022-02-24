@@ -10,5 +10,5 @@ public class ConstantsAndParameters {
   public static final long BETA = (long) (3.2 * MILLISECONDS_PER_SECOND);
   public static final long ALPHA = (long) (1.8 * MILLISECONDS_PER_SECOND);
 
-  public static final int PACKAGE_SIZE = 5;
+  public static final int PACKAGE_SIZE = 1;
 }

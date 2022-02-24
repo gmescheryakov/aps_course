@@ -1,10 +1,7 @@
 package bufferAndManagers;
 
-import org.apache.poi.ss.extractor.EmbeddedExtractor;
 import source.Request;
-import tools.Report;
 
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.*;
 
@@ -89,5 +86,12 @@ public class Buffer {
 
     List<Queue<Request>> getRequestsList() {
         return buffer;
+    }
+
+    public int getRequestFromBuffer(int index){
+        for (Request requests: buffer.get(index)){
+            return requests.getSourceNumber();
+        }
+        return index;
     }
 }

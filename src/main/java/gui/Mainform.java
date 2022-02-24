@@ -52,8 +52,8 @@ public class Mainform extends JFrame {
         setSize(1000, 800);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
-        sourceCount.setText("10");
-        bufferCount.setText("10");
+        sourceCount.setText("5");
+        bufferCount.setText("23");
         deviceCount.setText("4");
         lambda.setText("0.26");
         next = new Object();
